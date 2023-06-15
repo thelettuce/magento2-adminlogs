@@ -68,11 +68,22 @@ class Adminlogin implements ObserverInterface
     {
         $user = $this->_authSession->getUser();
         $ipAddress = $this->_ipAddress->getRemoteAddress();
-        $model = $this->_adminLogsModel->create();
+        if ($ipAddress=="127.0.0.1") { $ipAddress=$this->getUserIpAddr(); }
+		$model = $this->_adminLogsModel->create();
         $model->setUsername($user->getUsername());
         $model->setIpaddress($ipAddress);
         $model->setStatus(1);
         $model->setDate(date('Y-m-d H:i:s'));
         $model->save();
     }
+	
+	
+	public function getUserIpAddr(){ 
+		if(!empty($_SERVER['HTTP_CLIENT_IP'])){ $ip = $_SERVER['HTTP_CLIENT_IP']; }
+		elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){ $ip = $_SERVER['HTTP_X_FORWARDED_FOR']; }
+		else{ $ip = $_SERVER['REMOTE_ADDR']; }
+		return $ip; 
+	}
+	
 }
+
